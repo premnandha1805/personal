@@ -1,0 +1,221 @@
+window.LETTER_PAGES = [
+  {
+    "id": 1,
+    "theme": "day-night",
+    "title": "Morning to Night",
+    "quoteHighlight": "You are the first person that comes to mind when I wake up and sleep…",
+    "interactiveType": "sky-cycle",
+    "content": "Elaaa start cheyali… em cheppali? 🥺\n\nFirst of all, happpiessttt birthdayyyyy tooo myyyy ammmmuuuluuu (Rakshashiiiiiiii) ❤️\n\nYou are the first person that comes to mind when I wake up and when I sleeppp… You are the person I want to spend the most time with.\n\nLike… neeku pette efforts, naaku efforts laaga kooda kanapadavu. Neeku happiness isthundhi ante… aa pani ela annaaa cheyali anukune type! ✨"
+  },
+  {
+    "id": 2,
+    "theme": "effort-words",
+    "title": "Efforts in Practical",
+    "quoteHighlight": "I show my love in practical 🤍",
+    "interactiveType": "floating-efforts",
+    "content": "Maybe naaku andhari laaga baaga matladatam raadhu… like saradhaga, joyful gaaa.\n\nNenu straightforward… maybe boring… maybe kaadhu, booriingey! 😅\n\nButtt… I show my love in practical. 🤍"
+  },
+  {
+    "id": 3,
+    "theme": "lilies",
+    "title": "30 km & Lilies",
+    "quoteHighlight": "Neeku lilies istam ante 30 km travel chesi photos pette antha… 🪷",
+    "interactiveType": "lily-bloom",
+    "content": "Enthaaa anteyyy…\n\nNeeku lilies istam ante 30 km travel chesi photos pette antha… 🪷\nEntha ante, neekosam em anna nerchukune anthaa…\nEntha ante, em adigina koneyali antha…\n\nAa position lo undadaaniki, efforts ongoing! 🚗💨",
+    "photos": [
+      {
+        "id": 1,
+        "src": "assets/img/IMG20260705102615.jpg",
+        "title": "Water Lily Pond",
+        "caption": "First stop after 30 km: Finding the blooming water pond 🪷",
+        "date": "July 5, 2026 • 10:26 AM"
+      },
+      {
+        "id": 2,
+        "src": "assets/img/IMG20260705102956.jpg",
+        "title": "Lavender Bloom",
+        "caption": "A royal lavender water lily in full bloom, just as you love them 💜",
+        "date": "July 5, 2026 • 10:29 AM"
+      },
+      {
+        "id": 3,
+        "src": "assets/img/IMG20260705104507.jpg",
+        "title": "Pristine White Lily",
+        "caption": "A pristine white lily standing pure and bright in the morning sun 🤍",
+        "date": "July 5, 2026 • 10:45 AM"
+      },
+      {
+        "id": 4,
+        "src": "assets/img/IMG20260705104526.jpg",
+        "title": "Trio in Harmony",
+        "caption": "Lilies blooming together in harmony across the quiet water 🌸",
+        "date": "July 5, 2026 • 10:45 AM"
+      },
+      {
+        "id": 5,
+        "src": "assets/img/IMG20260705104532.jpg",
+        "title": "Holding It For Ammu",
+        "caption": "Holding this delicate bloom gently, wishing I could hand every single one to you ♡",
+        "date": "July 5, 2026 • 10:45 AM"
+      },
+      {
+        "id": 6,
+        "src": "assets/img/IMG20260705104544.jpg",
+        "title": "30 km Journey",
+        "caption": "Standing at the ponds after 30 km — every single kilometer was worth seeing this for you 🌿",
+        "date": "July 5, 2026 • 10:45 AM"
+      },
+      {
+        "id": 7,
+        "src": "assets/img/IMG20260705104616.jpg",
+        "title": "The Little Honeybee",
+        "caption": "Look closely at the golden center — even a little honeybee came to enjoy your flower 🐝✨",
+        "date": "July 5, 2026 • 10:46 AM"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "theme": "guitar-flute",
+    "title": "Guitar to Flute",
+    "quoteHighlight": "Naa efforts undali ani flute nerchukuntunna neekosamm! 🎶",
+    "interactiveType": "flute-stage-trigger",
+    "content": "Neeku istamaina guitar nerchukundham anukunnaaa… gaani budget and time constraints valla avvaledhu.\n\nBut naa efforts undali ani… flute nerchukuntunna neekosamm! 🎶\nEmo, inka antha perfect avvaledhu, but still putting efforts. Chala ayyayi, sarigga time ivvalekapoya…\n\nEmo, maybe peddha matter kakapovachu nerchukovadam, but naaku chala peddha record… nenu musical instrument nerchukovadam!\n\nI am a guy who is over ambitious… but efforts entha pedathano thelusu kadha neeku? 🥺🤍"
+  },
+  {
+    "id": 5,
+    "theme": "details",
+    "title": "Registered in Mind",
+    "quoteHighlight": "Neeku istamayinavi chepthey, ala mind lo register aypothayi… ✨",
+    "interactiveType": "constellation-details",
+    "content": "Elagoo marchipotha… anni observe cheyadam raadhu.\n\nBut after I met you, I changed myself as you like. Neeku observation istam… nee gurinchi em topic vachinaa, I put my 1000% focus! 🧠✨\n\nNeeku istamayinavi chepthey, ala mind lo register aypothayi… even small details:\n• Photos istam 📸\n• Music istam 🎵\n• AC padadhu ❄️\n• Modern kante traditions istam 🥻\n• Chocolates ante baagaa istam 🍫\n…inkaa chalaaaa!"
+  },
+  {
+    "id": 6,
+    "theme": "growth",
+    "title": "Becoming Your Dream Person",
+    "quoteHighlight": "I want to keep improving myself, so that I can become your dream person… 💫",
+    "interactiveType": "ascending-light",
+    "content": "I want to keep improving myself, so that I can become your dream person…\n\nNuvvu oohinchukunna person ki em qualities undalo, anni naalo undali ani try chesthunna.\n\nMaybe physical qualities I cannot match… but other than that, I can and I will! 🤍💫"
+  },
+  {
+    "id": 7,
+    "theme": "two-times",
+    "title": "Fell Two Times",
+    "quoteHighlight": "Actually, I fell for you two timesss… 🥺❤️",
+    "interactiveType": "two-points-merging",
+    "content": "Actually, I fell for you two timesss…\n\nFirst starting, maybe attraction anukunna…\nTharuvatha tharuvatha… inka inka deep gaa love chesaa… 🥺❤️"
+  },
+  {
+    "id": 8,
+    "theme": "my-world",
+    "title": "Nuvey Prapancham",
+    "quoteHighlight": "Nuvve prapancham aypoyavu… face lo 10,000 Watts bulb velugudhiii! 💡",
+    "interactiveType": "cosmic-world-bulb",
+    "content": "Like… nuvve prapancham aypoyavu. 🌍\n\nChala emotions nuvve parichayam chesavu. Movies lo choosi 'ila nenu eppudu feel avuthana' anukunnavi… anni experience cheyinchavu.\n\nNuvvu premaga or konchem care chupinchinaa… naaku face lo 10,000 Watts bulb velugudhiii! 💡✨"
+  },
+  {
+    "id": 9,
+    "theme": "mood-rain",
+    "title": "Mood Controller & The Rain",
+    "quoteHighlight": "You are my mood controller… my entire world depends on youuu 🌧️☕",
+    "interactiveType": "mood-meter-rain",
+    "content": "Neetho evaranna close aithe possessiveness… daani kante bhayam, like dhooram aypothavemo ani. 🥺\n\nNuvvu navvithe ikkada full happy… akkada neeku health problem ante ikkada same pain, mentally. Like, you are my mood controller… my entire world depends on youuu.\n\nNeetho video call matladithe adho achievement… ninnu choosthu undipothaa, neeku kooda thelusu. Nuvvu 'Nandhuu' ante inka rathrulu nidralu undavu… coffee kante ekkuva effective! ☕\n\nNee varsham pichi entha pattasindhi ante… ala thadusthunna nuvve gurthosthunnav. Neeku istamainadhi edhanna naaku istam… 🌧️🤍"
+  },
+  {
+    "id": 10,
+    "theme": "dreams",
+    "title": "Every Bucketlist & Dream",
+    "quoteHighlight": "Every bucketlist, every dream fulfill chese duty nenu theesukovali… 🥺",
+    "interactiveType": "amber-warmth",
+    "content": "Naaku nuvvu eppudu chalaaa happy gaa, eppudu navvuthu, nannu thiduthuuu… neeku nachinattu gaa, every bucketlist, every dream fulfill chese duty nenu theesukovali ani undhi. 🥺\n\nLike nee ambitions naavi… marriage chesukuni chalaaaa baaga choosukovali ani undhi. Chala nights spend cheyali, chala vacations, chala foods… chala godavalu (not serious, just silly!).\n\nEvery time ninnu bujjaginchali, impress cheyali… nee alaka istam. Ninnu ninnu laage istapadda… verega maarali, idhi marchukovali ani asalu ananu… endhukante alage istam naaku, chalaa istamey! 🤍✨"
+  },
+  {
+    "id": 11,
+    "theme": "soulmate",
+    "title": "My Soo What Soulmate",
+    "quoteHighlight": "You are my soo what soulmate 🕊️🤍",
+    "interactiveType": "soulmate-glow",
+    "content": "Nuvvu unte vere person ane thought kooda ledhu naaku.\n\nEppudu aithe nuvvu vachavo… inko ammayi face kooda gurthu ledhu, choodaledhu, choodalenu kooda!\n\nEppudu aithe naku feelings unnayi anukunnano… akkade na prapancham aagipoyindhi, neetho kalisina prapancham start ayyindhi. Everything that happens, or every thought I have, belongs to you and my family…\n\nYou are my soo what soulmate. 🕊️🤍"
+  },
+  {
+    "id": 12,
+    "theme": "worthy",
+    "title": "Prayers & Becoming Worthy",
+    "quoteHighlight": "Kaavali ani devudini konni velaaa sarlu korukunnaaa… 💔",
+    "interactiveType": "sacred-reverence",
+    "content": "Nee valla edchaaa… 🥺\nKaavali ani devudini konni velaaa sarlu korukunnaaa… nathooo undali anii.\n\nJarugudho, isthado, ledho… ledha inka ninnu pondhe worth inka raakapovachu. But I will never give up… worthy gaa maaratha!\n\nAsalu nee value, nuvvu entha istamo… neeku vere vallu close avuthunnappudu ardham ayyindhi. Nannu distance pettadam… appati nunchi thelisindhi nee value, nuvvu ante entha istamo… 💔"
+  },
+  {
+    "id": 13,
+    "theme": "vulnerable",
+    "title": "Vulnerability & Fear",
+    "quoteHighlight": "Dhooram pettina prathi saariii, inkaa ekkuva deep ga love chesesthunna… 🥺",
+    "interactiveType": "quiet-darkness",
+    "content": "Naa kopam kooda choosavu first time… adhi kooda nee meedha kaadhu, vellipothavemo ane bhayam tho burst ayina possessiveness choosavu.\n\nMandipothundhi… like ela untadhi ante, nuvvu chepthunte 'nuvvu natho kooda entha excitement tho matladithe bagundu, natho unnappudu entha happy ga undali' ani chala anukunta.\n\nTharuvatha neeku nachatledhu ani thelisi distance pedadham, dhooranga undham, aapedham anukunna… gaani chaalaa kashtam aypoyindhe!\n\nDhooram pettina prathi saariii, inkaa ekkuva deep ga love chesesthunna… give up ivvalekapothunna. Nuvvu dhooram pedithe undalenu… enni sarlu 'veedu vaddhu anna paduthunnadu' ani anukovachu… 🥺💔"
+  },
+  {
+    "id": 14,
+    "theme": "first-choice",
+    "title": "First Choice",
+    "quoteHighlight": "I want to beee yourrr firsttt choice… 🤍",
+    "interactiveType": "spotlight-first-choice",
+    "content": "Like ekkada nenu kopam lo gaani, ekkada ego or self-respect ki poyi oka chance pogottukuntanemo ani naaku bhayame…\nOka chance pogottukovali ani ledhu naaku… anthaaa istammm! Neetho na lifetime undali ani undhi.\n\nKaani ee madhya ardham ayyindhi… emmo nijamo kaadho thelidhu. Entha try chesina, em chesina, nenu nachuthunnana ani doubt vasthundhi…\nEppatiki nachana? Nuvvu korukune person nenu eppatiki kaanaaa? 🥺\n\nNenu nee first choice eppatiki kaana?\nI want to beee yourrr firsttt choice… 🤍"
+  },
+  {
+    "id": 15,
+    "theme": "queen-devathaa",
+    "title": "Queen & Devathaa",
+    "quoteHighlight": "Oka queen laa choosukuntaa… devathaa laa admire chesthaa! 👑🕊️",
+    "interactiveType": "crown-to-halo",
+    "content": "Naaku thelusu nuvvu elaa love chesthavooo… nee imaginations, nee partner ki iche importance.\n\nI want to be that. I want to experience that kind of love… daani kosam em cheyadaanikanna, em anna chesthaa ammuuuu!\n\nOka chance, or small hope… Parents problem ante, I promise that I will be in a position that I can convince your parents also. I request, or I beg… but I want you in my life!\n\nOka queen laa choosukuntaa… devathaa laa admire chesthaa! 👑🕊️🤍"
+  },
+  {
+    "id": 16,
+    "theme": "perfect-smile",
+    "title": "Perfect To Me & Your Smile",
+    "quoteHighlight": "You arrreee perfect too meee! The most wonderful thing I ever saw… ✨🌸",
+    "interactiveType": "smile-arc-glow",
+    "content": "Endhuko two times padipoya anna kadhaa… malli eppudu ante, nuvvu nannu distance pettadam start chesaka entha love chesano thelisi, inkaa chesaa!\n\nNaaku like neelo ekkada imperfections anevive kanapadavu…\nYou arrreee perfect too meee!\nYou areee the most beautiful girl in the world to me. Nee mundhu migatha vallu andharu thakkuva laaga kanapaduthunnaru… evaru antha attractive ga kanapadatledhu.\n\nNuvvu navvuthavu gaaa… aa smileee thee most wonderful thing I ever saw or imagined! Daani kosam eppudu ala undalani choosukuntaaa… ✨🌸🥺"
+  },
+  {
+    "id": 17,
+    "theme": "no-force",
+    "title": "I Don't Want To Force You",
+    "quoteHighlight": "These are my feelings, I don't want to force you… you have me 🤍🩹",
+    "interactiveType": "pure-paper",
+    "content": "Maybe nenu entha cheppina, or asalu em chesina… neeku naa meedha feelings undakapothe, nenu asalu thappu pattanu. Endhukante these are my feelings, I don't want to force you…\n\nNaaku ninnu neeku nachinattu gaa unchali ani korika… appudu nenu force cheyakoodadhu gaa.\n\nBut eppudanna low ayina, eppudanna confidence thaggina, evaranna wrong anukunna… eppudu change avvaku.\n\nAnd you have me… one text, and I will be present. I am always waiting just behind your back. 🤍🩹"
+  },
+  {
+    "id": 18,
+    "theme": "open-arms",
+    "title": "First Person To Open Arms",
+    "quoteHighlight": "I WILL BE THE FIRST PERSON TO OPEN ARMS FOR YOU 🫂🤍",
+    "interactiveType": "open-arms-spotlight",
+    "content": "You are a treasure to me… fools don't know the value of youuu.\n\nAlready cheppaa neeku… nuvvu happy ga unnappudu natho cheppakapoyina, undakapoyina parle.\nBut when you are sad or something happens… nenu untaa.\n\nNenu neeku first person avvali… whatever the matter, anything, I will be there!\n\nI WILL BE THE FIRST PERSON TO OPEN ARMS FOR YOU. 🫂🤍\n\nRemember that… and don't feel you are not worthy. Everything I put, you deserve. I feel like you are worthy of even moreee, and I will keep putting more efforts!"
+  },
+  {
+    "id": 19,
+    "theme": "treasure",
+    "title": "Rarest Most Valuable Treasure",
+    "quoteHighlight": "You are the RAREST MOOOSSSTTT VALUABLEEEE TREASUREEEEE! 💎✨",
+    "interactiveType": "gemstone-to-heart",
+    "content": "When you feel unworthy or low… just remember this Wastee Felloooww! 🥺\nHow he sees you…\nHowww heee values youuu…\nHow he admires you…\nHow he puts efforts to spend time with you…\nHow he is fighting to become your partner!\n\nYou are that great person I always tell you about…\nYou are the RAREST MOOOSSSTTT VALUABLEEEE TREASUREEEEE! 💎✨\n\nRememberrr… I wish you get everything you ever wanted, but adhi nenu fulfill cheyali ani anukuntunna… oka chanceee isthavaaa ammmuuuuuuuu?\n\nNinnu preminchinattu evarini preminchalenu, damn sure about it. You are the first person and last person that I can ever show this kind of love to… 🤍♾️"
+  },
+  {
+    "id": 20,
+    "theme": "love-declaration",
+    "title": "I LOVEEEE UUUUU AMMUUUUU",
+    "quoteHighlight": "I LOVEEEE UUUUU AMMUUUUU (Rakshashiii) ❤️🥺",
+    "interactiveType": "breathing-declaration",
+    "content": "Once again… Haaaaaaaaaaaapppppieeeeeeeeee Birthdayyyyyyyyyyyy AMMMMMMMMUUUUUUUUUUUU! 🎂❤️\n\n(Paina unna matter maybe naalo unna prema motham convey cheyaledhu… maybe 20% express chesi untadhi. Cheppukolenivi, express cheyalekaa unnavi inka chalaaaa undhi ammmuuu…)\n\nI LOVEEEE UUUUU AMMUUUUU (Rakshashiii) ❤️🥺\nOka chance ivvochuuu gaaaa ammuuuu… nuvvu kaavallliii ammuuuuu!\n\nMaybe idhi chadavadam valla emotional ayyi edipinche unta… but edvoddhu kaniii… okaaa chanceeeee!\n\nI will be waiting until my feelings fade away… maybe never that will happen.\nChoosthaa… aa devudu ee devathani naaku isthadooo ledhooo… wait chesthu untaaa ammuuuu.\n\nOkati aithe confident ga cheptha:\nNenu love chesinattu ninnu entha pure gaa evaru cheyaleru, after your family…\n\nHappy birthdayyyy ammuuuuuuu!\nSarigga express chesano ledho thelidhu… first time express cheyatam idhanthaaa… 🥺💌"
+  },
+  {
+    "id": 21,
+    "theme": "signature",
+    "title": "Itlu, Nandhu",
+    "quoteHighlight": "Nandhuuuuuu (Wastee Felloooww) ♡",
+    "interactiveType": "handwritten-signature",
+    "content": "itlu,\nNandhuuuuuu(Wastee Felloooww)"
+  }
+];

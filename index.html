@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#120b12">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="format-detection" content="telephone=no">
+  <title>For Ammuuu (Rakshashiiiiiiii) ♡ Happiest Birthday</title>
+  <meta name="description" content="A private digital love book and birthday letter made with unreasonable love for Ammuuu by Nandhu (Wastee Felloooww).">
+  
+  <!-- Modern Typography from Google Fonts (Lora, Literata, Cinzel, Cormorant, Caveat, Sacramento, Outfit) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400;1,7..72,500&family=Caveat:wght@400;600;700&family=Sacramento&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Ambient Particle & Effects Canvas -->
+  <canvas id="ambient-canvas"></canvas>
+  <div id="ambient-lighting-glow" class="ambient-glow"></div>
+
+  <!-- Audio Controls Bar -->
+  <header class="audio-controls-bar" id="audio-controls">
+    <div class="audio-widget glass-panel">
+      <button id="btn-music-toggle" class="audio-btn" title="Toggle Ambient Music" aria-label="Toggle Ambient Music">
+        <span class="audio-icon">🎵</span>
+        <span class="audio-label" id="music-status-text">Music</span>
+      </button>
+      <div class="volume-slider-wrap">
+        <input type="range" id="music-volume" min="0" max="1" step="0.05" value="0.5" title="Music Volume" aria-label="Music Volume">
+      </div>
+      <button id="btn-sfx-toggle" class="audio-btn active" title="Toggle Paper Rustle Sounds" aria-label="Toggle Paper Sounds">
+        <span class="audio-icon">📖</span>
+        <span class="audio-label">Sound FX</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- 1. PRELOADER -->
+  <section id="preloader" class="preloader-stage active">
+    <div class="preloader-content">
+      <div class="pulsing-heart-wrap">
+        <svg class="beating-heart-svg" viewBox="0 0 100 100" width="80" height="80">
+          <defs>
+            <radialGradient id="heartGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#ff758c" />
+              <stop offset="70%" stop-color="#ff4b6e" />
+              <stop offset="100%" stop-color="#c9184a" />
+            </radialGradient>
+            <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="4" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+          <path class="heart-shape" d="M 50,85 C 10,55 0,35 15,18 C 28,3 45,12 50,25 C 55,12 72,3 85,18 C 100,35 90,55 50,85 Z" fill="url(#heartGlow)" filter="url(#softGlow)" />
+        </svg>
+      </div>
+      <div class="preloader-texts">
+        <p class="preloader-text line-1" id="preload-line-1">Made with an unreasonable amount of love…</p>
+        <p class="preloader-text line-2" id="preload-line-2">and a little bit of Wastee Felloooww energy.</p>
+      </div>
+      <div class="preloader-loader-bar">
+        <div class="loader-progress" id="loader-progress-fill"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. CINEMATIC OPENING INTRO -->
+  <section id="cinematic-intro" class="cinematic-intro-stage">
+    <div class="intro-backdrop"></div>
+    <div class="intro-center-glow" id="intro-glow"></div>
+    
+    <div class="intro-story-container">
+      <p class="intro-line" id="intro-step-1">For someone very, very special…</p>
+      <p class="intro-line" id="intro-step-2">Someone who probably doesn't know how much space she occupies in someone's world.</p>
+      
+      <div class="intro-hero" id="intro-step-3">
+        <h1 class="intro-ammu-title">
+          <span class="ammu-name-text">AMMUUUUU</span>
+          <span class="heart-symbol">💗</span>
+        </h1>
+        <h2 class="intro-nickname">Rakshashiiiiiiii</h2>
+      </div>
+
+      <div class="intro-birthday-msg" id="intro-step-4">
+        <div class="birthday-banner-container" id="birthday-letters">
+          <div class="birthday-banner-line line-happy">
+            <span>H</span><span>A</span><span>P</span><span>P</span><span>P</span><span>Y</span>
+            <span>&nbsp;</span>
+            <span>B</span><span>I</span><span>R</span><span>T</span><span>H</span><span>D</span><span>A</span><span>Y</span>
+          </div>
+          <div class="birthday-banner-line line-ammu">
+            <span>A</span><span>M</span><span>M</span><span>U</span><span>U</span><span>U</span><span>U</span><span>U</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="intro-cta-wrap" id="intro-step-5">
+        <p class="intro-subtext">I made something for you.</p>
+        <button id="btn-open-book" class="btn-cinematic-open">
+          <span class="btn-text">OPEN IT ♡</span>
+          <span class="btn-glow-orbit"></span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. MAIN BOOK EXPERIENCE -->
+  <main id="book-experience" class="book-stage">
+    
+    <!-- Top Meta Info & Progress Bar -->
+    <!-- Top Meta Info & Progress Bar -->
+    <div class="book-top-bar">
+      <div class="book-top-left">
+        <div class="book-meta-chapter" id="current-chapter-title">Morning to Night</div>
+      </div>
+
+      <div class="book-top-actions">
+        <!-- Reading Typography Comfort Widget -->
+        <div class="reader-tools-wrap" id="reader-tools-wrap">
+          <button id="btn-reader-toggle" class="btn-reader-tool" title="Reading & Typography Options" aria-label="Reading Options">
+            <span class="reader-icon">Aa</span>
+            <span class="reader-text">Font</span>
+          </button>
+          
+          <div class="reader-dropdown-panel glass-panel" id="reader-dropdown">
+            <div class="reader-panel-header">
+              <span>Reading Comfort</span>
+              <button id="btn-close-reader" class="btn-reader-close" aria-label="Close">✕</button>
+            </div>
+            
+            <div class="reader-tool-section">
+              <span class="reader-section-label">Font Size</span>
+              <div class="reader-btn-group" id="reader-size-group">
+                <button class="reader-btn size-btn" data-size="compact" title="Compact">A−</button>
+                <button class="reader-btn size-btn active" data-size="standard" title="Standard (Recommended)">A</button>
+                <button class="reader-btn size-btn" data-size="large" title="Large">A+</button>
+              </div>
+            </div>
+
+            <div class="reader-tool-section">
+              <span class="reader-section-label">Typeface</span>
+              <div class="reader-btn-group font-group" id="reader-font-group">
+                <button class="reader-btn font-btn active" data-font="lora" title="Lora: Warm, romantic, and crystal clear">Lora</button>
+                <button class="reader-btn font-btn" data-font="literata" title="Literata: Designed for digital books">Literata</button>
+                <button class="reader-btn font-btn" data-font="outfit" title="Modern Sans: Clean & contemporary">Modern</button>
+              </div>
+            </div>
+
+            <div class="reader-tool-section">
+              <span class="reader-section-label">Ink Depth</span>
+              <div class="reader-btn-group ink-group" id="reader-ink-group">
+                <button class="reader-btn ink-btn active" data-ink="obsidian" title="Deep Obsidian (Darkest Contrast)">Obsidian</button>
+                <button class="reader-btn ink-btn" data-ink="espresso" title="Warm Espresso">Espresso</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="book-page-indicator" id="outside-page-counter">
+          <span id="current-page-num">01</span> <span class="divider">/</span> <span id="total-page-num">21</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- The 3D Physical Book Container -->
+    <div class="book-perspective-wrapper" id="book-perspective-wrap">
+      <div class="book-shadow-ambient"></div>
+      
+      <div class="book-physical-container" id="main-book">
+        
+        <!-- Book Spine & Binding Details -->
+        <div class="book-spine-crest"></div>
+        
+        <!-- Physical 3D Book Cover / Desk Background -->
+        <div class="book-outer-cover"></div>
+
+        <!-- Book Leaf Mechanism -->
+        <div class="book-leaf-wrapper" id="book-leaf-wrapper">
+          
+          <!-- LEFT PAGE (Desktop dual view / previous page reference) -->
+          <article class="book-page book-page-left" id="page-left-display">
+            <div class="page-paper-texture"></div>
+            <div class="page-inner-border"></div>
+            <div class="page-content-area" id="page-left-content">
+              <!-- Dynamically populated or decorative intro leaf -->
+              <div class="page-header-mark">
+                <span class="botanical-leaf">❦</span>
+                <span class="page-meta-theme" id="page-left-theme-tag">Dedication</span>
+                <span class="botanical-leaf">❧</span>
+              </div>
+              <div class="page-body-text" id="page-left-text"></div>
+              <footer class="page-footer">
+                <span class="footer-heart-num" id="page-left-footer-num">♡ 01 ♡</span>
+              </footer>
+            </div>
+            <div class="page-edge-shadow"></div>
+          </article>
+
+          <!-- RIGHT PAGE (Current active reading page) -->
+          <article class="book-page book-page-right active-page" id="page-right-display">
+            <div class="page-paper-texture"></div>
+            <div class="page-inner-border"></div>
+            
+            <!-- Page Interactive Stage Overlay (For letter-driven dynamic moments) -->
+            <div class="page-scene-overlay" id="page-scene-stage">
+              <!-- Visual moments injected here -->
+            </div>
+
+            <div class="page-content-area" id="page-right-content">
+              <div class="page-header-mark">
+                <span class="botanical-leaf">❦</span>
+                <span class="page-meta-theme" id="page-right-theme-tag">A Love Letter</span>
+                <span class="botanical-leaf">❧</span>
+              </div>
+              
+              <div class="page-body-text" id="page-right-text">
+                <!-- Exact letter text rendered here verbatim -->
+              </div>
+              
+              <footer class="page-footer">
+                <span class="footer-heart-num" id="page-right-footer-num">♡ 01 ♡</span>
+              </footer>
+            </div>
+            
+            <!-- Dynamic turning shadow for 3D realism -->
+            <div class="page-turning-shadow" id="page-curl-shadow"></div>
+            <div class="page-edge-shadow right"></div>
+          </article>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Book Navigation Controls (Desktop & Mobile accessible) -->
+    <nav class="book-nav-controls" aria-label="Book page navigation">
+      <button id="btn-prev-page" class="nav-arrow-btn prev-btn" title="Previous Page (Left Arrow or Swipe Right)" aria-label="Previous Page">
+        <span class="arrow-symbol">‹</span>
+        <span class="nav-label">Back</span>
+      </button>
+
+      <div class="quick-jump-trigger-wrap">
+        <button id="btn-toc-open" class="btn-subtle-toc" title="View Table of Chapters">
+          <span class="toc-icon">✦</span>
+          <span class="toc-text">Chapters</span>
+        </button>
+      </div>
+
+      <button id="btn-next-page" class="nav-arrow-btn next-btn" title="Next Page (Right Arrow or Swipe Left)" aria-label="Next Page">
+        <span class="nav-label">Turn Page</span>
+        <span class="arrow-symbol">›</span>
+      </button>
+    </nav>
+
+    <!-- Mobile Swipe Instruction Hint -->
+    <div class="mobile-swipe-hint" id="mobile-swipe-hint">
+      <span>⟵ Swipe to turn page ⟶</span>
+    </div>
+
+  </main>
+
+  <!-- 4. CINEMATIC FLUTE VIDEO STAGE (Triggered seamlessly on Page 4) -->
+  <section id="flute-video-modal" class="cinematic-modal-overlay">
+    <div class="modal-dim-backdrop" id="flute-backdrop"></div>
+    <div class="flute-spotlight-beam"></div>
+    
+    <div class="flute-stage-container">
+      <div class="flute-prologue">
+        <p class="prologue-line line-a">“I couldn't learn everything perfectly…”</p>
+        <p class="prologue-line line-b">“…but I wanted to try something for you.”</p>
+        <div class="floating-note-accent">🎶 𝄞 ♬</div>
+      </div>
+
+      <div class="flute-video-theatre">
+        <div class="video-golden-frame">
+          <video id="flute-media-player" class="flute-video-player" playsinline controls preload="metadata" poster="">
+            <source src="assets/video/flute.mp4" type="video/mp4">
+            Your browser does not support HTML5 video.
+          </video>
+          
+          <!-- Fallback Card if flute.mp4 is not uploaded yet -->
+          <div id="flute-video-fallback" class="flute-video-fallback hidden">
+            <div class="fallback-icon">🪈</div>
+            <h4 class="fallback-title">Nandhu's Flute Performance</h4>
+            <p class="fallback-text">
+              Waiting for <code class="code-badge">assets/video/flute.mp4</code>.
+            </p>
+            <p class="fallback-sub">
+              Place your flute video in the folder and it will immediately play inside this cinematic stage!
+            </p>
+            <button id="btn-test-flute-audio" class="btn-subtle-preview">Play Flute Melody Simulation 🎵</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flute-epilogue">
+        <button id="btn-close-flute-stage" class="btn-return-letter">
+          <span>Okayyy… back to the letter ♡</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4b. CINEMATIC LILY MEMORY GALLERY MODAL (Triggered from Page 3) -->
+  <section id="lily-gallery-modal" class="cinematic-modal-overlay" aria-label="Lilies Photo Gallery">
+    <div class="modal-dim-backdrop" id="lily-gallery-backdrop"></div>
+    <div class="lily-spotlight-beam"></div>
+    
+    <div class="lily-gallery-stage-container">
+      <div class="lily-gallery-panel glass-panel">
+        <header class="lily-gallery-header">
+          <div class="lily-header-meta">
+            <span class="lily-botanical-icon">🪷</span>
+            <div>
+              <h3 class="lily-gallery-title">The 30 km Lily Journey</h3>
+              <p class="lily-gallery-sub">Captured with love for Ammuuu ♡ July 5</p>
+            </div>
+          </div>
+          <div class="lily-header-controls">
+            <span class="lily-counter-badge" id="lily-photo-counter">01 / 07</span>
+            <button id="btn-close-lily-gallery" class="btn-close-modal" title="Close Album" aria-label="Close Gallery">✕</button>
+          </div>
+        </header>
+
+        <div class="lily-theatre-stage">
+          <button id="btn-lily-prev" class="lily-arrow-btn prev-btn" title="Previous Photo (Left Arrow)" aria-label="Previous Photo">
+            <span>‹</span>
+          </button>
+          
+          <div class="lily-photo-display-wrap">
+            <div class="lily-photo-polaroid-frame" id="lily-photo-frame">
+              <div class="lily-photo-inner">
+                <img id="lily-lightbox-img" src="assets/img/IMG20260705102615.jpg" alt="Water Lily photo" class="lily-main-image">
+                <div class="lily-photo-shimmer"></div>
+              </div>
+              <div class="lily-polaroid-caption-bar">
+                <p class="lily-polaroid-caption" id="lily-lightbox-caption">First stop after 30 km: Finding the blooming water pond 🪷</p>
+                <span class="lily-polaroid-date" id="lily-lightbox-date">July 5, 2026 • 10:26 AM</span>
+              </div>
+            </div>
+          </div>
+
+          <button id="btn-lily-next" class="lily-arrow-btn next-btn" title="Next Photo (Right Arrow)" aria-label="Next Photo">
+            <span>›</span>
+          </button>
+        </div>
+
+        <!-- Thumbnail Filmstrip Row -->
+        <div class="lily-filmstrip-wrapper">
+          <div class="lily-filmstrip-bar" id="lily-thumbnails-row">
+            <!-- Dynamically populated 7 thumbnails -->
+          </div>
+        </div>
+
+        <div class="lily-gallery-footer">
+          <button id="btn-return-from-lily" class="btn-return-letter">
+            <span>Back to the letter ♡</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. CHAPTER / TOC DRAWER -->
+  <aside id="toc-drawer" class="toc-drawer-modal" aria-hidden="true">
+    <div class="toc-backdrop" id="toc-backdrop"></div>
+    <div class="toc-panel glass-panel">
+      <div class="toc-header">
+        <h3 class="toc-title">Moments & Chapters</h3>
+        <button id="btn-close-toc" class="btn-close-modal" aria-label="Close Chapters">✕</button>
+      </div>
+      <ul class="toc-list" id="toc-list-items">
+        <!-- Dynamically populated chapters -->
+      </ul>
+    </div>
+  </aside>
+
+  <!-- 6. CLOSING SCENE (After page 21) -->
+  <section id="closing-scene" class="closing-stage">
+    <div class="closing-backdrop"></div>
+    <div class="closing-spotlight"></div>
+    
+    <div class="closing-book-display">
+      <div class="closed-book-3d" id="closed-book-model">
+        <div class="closed-book-front">
+          <div class="closed-book-cover-art">
+            <span class="foil-crest">❦</span>
+            <h2 class="foil-title">AMMUUUUU</h2>
+            <p class="foil-sub">A Love Story In Words</p>
+            <span class="foil-heart">♡</span>
+          </div>
+        </div>
+        <div class="closed-book-spine"></div>
+        <div class="closed-book-pages-side"></div>
+      </div>
+    </div>
+
+    <div class="closing-farewell-text">
+      <h2 class="farewell-line line-1" id="close-line-1">Happy Birthday, Ammuuu ♡</h2>
+      <h3 class="farewell-line line-2" id="close-line-2">Rakshashiiiiiiii</h3>
+      <p class="farewell-line line-3" id="close-line-3">— Nandhu</p>
+    </div>
+
+    <!-- Final Secret Prompt -->
+    <div class="final-secret-trigger" id="final-secret-trigger">
+      <button id="btn-secret-heart" class="secret-pulsing-heart" title="One last thing…">
+        <span class="secret-heart-glow">♡</span>
+        <span class="secret-label">One last thing…</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- 7. FINAL SECRET MODAL -->
+  <div id="secret-modal" class="cinematic-modal-overlay">
+    <div class="modal-dim-backdrop" id="secret-backdrop"></div>
+    <div class="secret-dialog glass-panel">
+      <div class="secret-glow-halo"></div>
+      <div class="secret-inner">
+        <span class="secret-heart-accent">💗</span>
+        <p class="secret-whisper-text">
+          “Whatever happens, I hope you always know how much you are valued.”
+        </p>
+        <p class="secret-birthday-repeat">
+          Happy Birthday, Ammuuu ♡
+        </p>
+        <div class="secret-actions">
+          <button id="btn-replay-experience" class="btn-return-letter">
+            <span>Read From The Beginning 📖</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Element Fallback for user background music -->
+  <audio id="bg-audio-player" loop preload="none">
+    <source src="assets/audio/background.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Scripts -->
+  <script src="letter_data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
