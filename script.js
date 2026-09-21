@@ -51,6 +51,7 @@
     pageLeftFooterNum: document.getElementById('page-left-footer-num'),
     pageLeftThemeTag: document.getElementById('page-left-theme-tag'),
     pageRightDisplay: document.getElementById('page-right-display'),
+    pageRightContent: document.getElementById('page-right-content'),
     pageRightText: document.getElementById('page-right-text'),
     pageRightFooterNum: document.getElementById('page-right-footer-num'),
     pageRightThemeTag: document.getElementById('page-right-theme-tag'),
@@ -58,14 +59,6 @@
     btnPrevPage: document.getElementById('btn-prev-page'),
     btnNextPage: document.getElementById('btn-next-page'),
     btnTocOpen: document.getElementById('btn-toc-open'),
-
-    // Reader Comfort Tools
-    btnReaderToggle: document.getElementById('btn-reader-toggle'),
-    readerDropdown: document.getElementById('reader-dropdown'),
-    btnCloseReader: document.getElementById('btn-close-reader'),
-    readerSizeGroup: document.getElementById('reader-size-group'),
-    readerFontGroup: document.getElementById('reader-font-group'),
-    readerInkGroup: document.getElementById('reader-ink-group'),
 
     // TOC
     tocDrawer: document.getElementById('toc-drawer'),
@@ -493,6 +486,9 @@
       li.appendChild(btn);
       DOM.tocListItems.appendChild(li);
     });
+
+    // Pre-render initial page immediately so book content is fully loaded
+    renderCurrentPage();
   }
 
   // --- PRELOADER SEQUENCE ---
@@ -636,7 +632,10 @@
       ? `<span class="nav-label">Close Book ♡</span><span class="arrow-symbol">›</span>`
       : `<span class="nav-label">Turn Page</span><span class="arrow-symbol">›</span>`;
 
-    // Reset text scroll position to top for mobile reading comfort
+    // Reset all scroll positions to top for mobile reading comfort
+    if (DOM.pageRightContent) {
+      DOM.pageRightContent.scrollTop = 0;
+    }
     if (DOM.pageRightText) {
       DOM.pageRightText.scrollTop = 0;
     }
@@ -657,38 +656,12 @@
     state.particleMode = 'stars';
 
     switch (id) {
-      case 1: // Morning to Night sky cycle with tiny floating heart
-        const skyBanner = document.createElement('div');
-        skyBanner.className = 'sky-cycle-banner';
-        skyBanner.innerHTML = `
-          <div class="sky-gradient-track"></div>
-          <div class="sky-floating-heart" id="sky-heart-btn" title="Tap for love">💗</div>
-        `;
-        DOM.pageSceneStage.appendChild(skyBanner);
-        const skyHeart = skyBanner.querySelector('#sky-heart-btn');
-        skyHeart.addEventListener('click', (e) => {
-          skyHeart.style.transform = 'translate(-50%, -50%) scale(1.45) rotate(15deg)';
-          if (window.particleWorld) {
-            window.particleWorld.addTouchSparkle(e.clientX || window.innerWidth / 2, e.clientY || 100);
-          }
-          audio.playPaperRustle();
-          setTimeout(() => {
-            skyHeart.style.transform = 'translate(-50%, -50%) scale(1) rotate(0deg)';
-          }, 600);
-        });
+      case 1: // Morning to Night (Pristine, elegant reading without intrusive overlays)
+        state.particleMode = 'stars';
         break;
 
-      case 2: // Floating handwritten effort words
-        const efforts = ['remembered', 'noticed', 'tried', 'learned', 'showed up'];
-        efforts.forEach((word, idx) => {
-          const el = document.createElement('div');
-          el.className = 'effort-word-bubble';
-          el.textContent = word;
-          el.style.left = `${12 + (idx * 16)}%`;
-          el.style.top = `${16 + (idx * 15)}%`;
-          el.style.animationDelay = `${idx * 0.9}s`;
-          DOM.pageSceneStage.appendChild(el);
-        });
+      case 2: // The Efforts (Pristine text reading)
+        state.particleMode = 'stars';
         break;
 
       case 3: // 30 km & Blooming Lilies with Tap Petal Burst and Photo Memories
@@ -782,14 +755,14 @@
       case 4: // Guitar to Flute Transition & Stage Trigger Button
         state.particleMode = 'notes';
         const fluteBadge = document.createElement('div');
-        fluteBadge.className = 'flute-trigger-badge';
+        fluteBadge.className = 'flute-trigger-badge inline-flute-badge';
         fluteBadge.innerHTML = `
           <button id="btn-trigger-flute-modal" class="btn-open-flute-stage">
             <span class="btn-flute-icon">🪈</span>
             <span>Watch Nandhu's Flute Video 🎶</span>
           </button>
         `;
-        DOM.pageSceneStage.appendChild(fluteBadge);
+        DOM.pageRightText.appendChild(fluteBadge);
         document.getElementById('btn-trigger-flute-modal').addEventListener('click', openFluteVideoStage);
         break;
 
@@ -813,7 +786,7 @@
           });
           constWrap.appendChild(t);
         });
-        DOM.pageSceneStage.appendChild(constWrap);
+        DOM.pageRightText.appendChild(constWrap);
         break;
 
       case 6: // Aspiration embers
@@ -842,12 +815,12 @@
       case 9: // Mood Controller & Rain
         state.particleMode = 'rain';
         const moodBox = document.createElement('div');
-        moodBox.className = 'mood-controller-box';
+        moodBox.className = 'mood-controller-box inline-mood-box';
         moodBox.innerHTML = `
           <button class="mood-heart-toggle" id="btn-mood-toggle" title="Click to boost mood">💗</button>
           <span class="mood-tag-text" id="mood-label-text">MOOD: controlled by AMMUUU</span>
         `;
-        DOM.pageSceneStage.appendChild(moodBox);
+        DOM.pageRightText.appendChild(moodBox);
 
         // Interactive mood boost
         const moodToggle = moodBox.querySelector('#btn-mood-toggle');
@@ -951,19 +924,29 @@
     state.isTurningPage = true;
     audio.playPaperRustle();
 
+    const isMobile = window.innerWidth <= 960;
+    const duration = isMobile ? 350 : 850;
+    const swapTime = isMobile ? 160 : 420;
+
     const rightPage = DOM.pageRightDisplay;
     rightPage.classList.add('flipping-next');
 
-    // Midway through the 3D curl, update content
+    // Midway through the curl/transition, update content
     setTimeout(() => {
       state.currentPage++;
       renderCurrentPage();
-    }, 420);
+    }, swapTime);
 
     setTimeout(() => {
       rightPage.classList.remove('flipping-next');
       state.isTurningPage = false;
-    }, 850);
+    }, duration);
+
+    // Watchdog safety: guarantees state.isTurningPage never remains stuck
+    setTimeout(() => {
+      state.isTurningPage = false;
+      if (rightPage) rightPage.classList.remove('flipping-next');
+    }, duration + 100);
   }
 
   function turnPrevPage() {
@@ -972,22 +955,32 @@
     state.isTurningPage = true;
     audio.playPaperRustle();
 
+    const isMobile = window.innerWidth <= 960;
+    const duration = isMobile ? 350 : 850;
+    const swapTime = isMobile ? 160 : 420;
+
     const rightPage = DOM.pageRightDisplay;
     rightPage.classList.add('flipping-prev');
 
     setTimeout(() => {
       state.currentPage--;
       renderCurrentPage();
-    }, 420);
+    }, swapTime);
 
     setTimeout(() => {
       rightPage.classList.remove('flipping-prev');
       state.isTurningPage = false;
-    }, 850);
+    }, duration);
+
+    // Watchdog safety: guarantees state.isTurningPage never remains stuck
+    setTimeout(() => {
+      state.isTurningPage = false;
+      if (rightPage) rightPage.classList.remove('flipping-prev');
+    }, duration + 100);
   }
 
   function goToPage(targetPageNum) {
-    if (targetPageNum < 1 || targetPageNum > state.totalPages || targetPageNum === state.currentPage) return;
+    if (targetPageNum < 1 || targetPageNum > state.totalPages) return;
     audio.playPaperRustle();
     state.currentPage = targetPageNum;
     renderCurrentPage();
@@ -1176,6 +1169,7 @@
     let startY = 0;
     let touchStartTime = 0;
     let touchTarget = null;
+    let isDragging = false;
 
     window.addEventListener('touchstart', (e) => {
       if (e.touches.length >= 1) {
@@ -1183,6 +1177,8 @@
         startY = e.touches[0].clientY;
         touchStartTime = Date.now();
         touchTarget = e.target;
+        isDragging = false;
+
         if (window.particleWorld) {
           window.particleWorld.addTouchSparkle(startX, startY);
         }
@@ -1190,8 +1186,12 @@
     }, { passive: true });
 
     window.addEventListener('touchmove', (e) => {
-      if (e.touches.length > 0 && window.particleWorld) {
-        window.particleWorld.addTouchSparkle(e.touches[0].clientX, e.touches[0].clientY);
+      if (e.touches.length >= 1) {
+        const moveX = Math.abs(e.touches[0].clientX - startX);
+        const moveY = Math.abs(e.touches[0].clientY - startY);
+        if (moveX > 8 || moveY > 8) {
+          isDragging = true;
+        }
       }
     }, { passive: true });
 
@@ -1205,25 +1205,61 @@
         return;
       }
 
-      // Ignore swipes that originated from interactive elements, horizontal reels, or buttons
-      if (touchTarget && touchTarget.closest) {
-        if (touchTarget.closest('.lily-polaroid-reel, .lily-polaroid-card, #reader-dropdown, .audio-controls-bar, .book-top-bar, .book-nav-controls, button, input, select, textarea, a, .flute-trigger-badge, .btn-open-flute-stage, .btn-view-all-photos')) {
-          return;
-        }
+      // Ignore if user was adjusting the volume slider
+      if (touchTarget && touchTarget.closest && touchTarget.closest('input[type="range"]')) {
+        return;
       }
 
       if (e.changedTouches.length === 1) {
-        const deltaX = e.changedTouches[0].clientX - startX;
-        const deltaY = e.changedTouches[0].clientY - startY;
+        const endX = e.changedTouches[0].clientX;
+        const endY = e.changedTouches[0].clientY;
+        const deltaX = endX - startX;
+        const deltaY = endY - startY;
         const elapsedTime = Date.now() - touchStartTime;
+        const absX = Math.abs(deltaX);
+        const absY = Math.abs(deltaY);
 
-        // Intentional horizontal thumb swipe:
-        // Must be fast (< 750ms), at least 45px, and significantly more horizontal than vertical (1.5x)
-        if (elapsedTime < 750 && Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+        // 1. Natural horizontal thumb swipe (up to 1200ms, threshold 28px, 1.05 ratio)
+        if (elapsedTime < 1200 && absX > 28 && absX > absY * 1.05) {
           if (deltaX < 0) {
             turnNextPage(); // Swiped left -> Next page
           } else {
             turnPrevPage(); // Swiped right -> Prev page
+          }
+          return;
+        }
+
+        // 2. Vertical flick at boundary to advance / go back
+        const scrollElem = DOM.pageRightContent || DOM.pageRightText;
+        if (scrollElem && elapsedTime < 1000 && absY > 55 && absY > absX * 1.2) {
+          const atBottom = (scrollElem.scrollHeight - scrollElem.scrollTop - scrollElem.clientHeight) <= 18;
+          const atTop = scrollElem.scrollTop <= 10;
+
+          if (deltaY < 0 && atBottom) {
+            turnNextPage(); // Flick up at bottom -> Next Page
+            return;
+          } else if (deltaY > 0 && atTop && state.currentPage > 1) {
+            turnPrevPage(); // Flick down at top -> Prev Page
+            return;
+          }
+        }
+
+        // 3. Tap Navigation (One-touch page turn on margins, Kindle-style)
+        if (!isDragging && elapsedTime < 400 && absX < 12 && absY < 12) {
+          // If tapped directly on an interactive button or photo card, let native click event handle it
+          if (touchTarget && touchTarget.closest && touchTarget.closest('button, a, .lily-polaroid-card, .btn-view-all-photos, .toc-item-btn, #btn-trigger-flute-modal, .lily-container, .detail-tag, .mood-heart-toggle')) {
+            return;
+          }
+
+          const screenWidth = window.innerWidth;
+          const screenHeight = window.innerHeight;
+          // Middle zone vertically (excluding top bar and bottom controls)
+          if (endY > 70 && endY < screenHeight - 65) {
+            if (endX > screenWidth * 0.82) {
+              turnNextPage(); // Tap right margin -> Next Page
+            } else if (endX < screenWidth * 0.18) {
+              turnPrevPage(); // Tap left margin -> Prev Page
+            }
           }
         }
       }
@@ -1340,143 +1376,6 @@
       DOM.btnSfxToggle.classList.toggle('active', state.sfxEnabled);
     });
 
-    // Reading Comfort Tools Setup
-    setupReaderComfortTools();
-  }
-
-  // --- READING COMFORT & TYPOGRAPHY LOGIC ---
-  function setupReaderComfortTools() {
-    if (!DOM.btnReaderToggle || !DOM.readerDropdown) return;
-
-    DOM.btnReaderToggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      DOM.readerDropdown.classList.toggle('open');
-    });
-
-    if (DOM.btnCloseReader) {
-      DOM.btnCloseReader.addEventListener('click', () => {
-        DOM.readerDropdown.classList.remove('open');
-      });
-    }
-
-    document.addEventListener('click', (e) => {
-      if (DOM.readerDropdown.classList.contains('open') &&
-          !DOM.readerDropdown.contains(e.target) &&
-          e.target !== DOM.btnReaderToggle &&
-          !DOM.btnReaderToggle.contains(e.target)) {
-        DOM.readerDropdown.classList.remove('open');
-      }
-    });
-
-    // Font Size Buttons
-    if (DOM.readerSizeGroup) {
-      const sizeBtns = DOM.readerSizeGroup.querySelectorAll('.size-btn');
-      sizeBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const size = btn.dataset.size;
-          sizeBtns.forEach(b => b.classList.toggle('active', b === btn));
-          applyReaderSize(size);
-        });
-      });
-    }
-
-    // Font Family Buttons
-    if (DOM.readerFontGroup) {
-      const fontBtns = DOM.readerFontGroup.querySelectorAll('.font-btn');
-      fontBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const font = btn.dataset.font;
-          fontBtns.forEach(b => b.classList.toggle('active', b === btn));
-          applyReaderFont(font);
-        });
-      });
-    }
-
-    // Ink Contrast Buttons
-    if (DOM.readerInkGroup) {
-      const inkBtns = DOM.readerInkGroup.querySelectorAll('.ink-btn');
-      inkBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const ink = btn.dataset.ink;
-          inkBtns.forEach(b => b.classList.toggle('active', b === btn));
-          applyReaderInk(ink);
-        });
-      });
-    }
-  }
-
-  function applyReaderSize(size) {
-    const root = document.documentElement;
-    if (size === 'compact') {
-      root.style.setProperty('--reading-font-size', '1.08rem');
-      root.style.setProperty('--reading-line-height', '1.78');
-      root.style.setProperty('--reading-font-size-tablet', '1.04rem');
-      root.style.setProperty('--reading-font-size-mobile', '1.02rem');
-    } else if (size === 'large') {
-      root.style.setProperty('--reading-font-size', '1.28rem');
-      root.style.setProperty('--reading-line-height', '1.96');
-      root.style.setProperty('--reading-font-size-tablet', '1.20rem');
-      root.style.setProperty('--reading-font-size-mobile', '1.14rem');
-    } else { // standard
-      root.style.setProperty('--reading-font-size', '1.18rem');
-      root.style.setProperty('--reading-line-height', '1.9');
-      root.style.setProperty('--reading-font-size-tablet', '1.12rem');
-      root.style.setProperty('--reading-font-size-mobile', '1.08rem');
-    }
-    localStorage.setItem('ammu_reader_size', size);
-  }
-
-  function applyReaderFont(font) {
-    const root = document.documentElement;
-    if (font === 'literata') {
-      root.style.setProperty('--reading-font-family', "'Literata', 'Lora', Georgia, serif");
-      root.style.setProperty('--reading-font-weight', '500');
-    } else if (font === 'outfit') {
-      root.style.setProperty('--reading-font-family', "'Outfit', -apple-system, BlinkMacSystemFont, sans-serif");
-      root.style.setProperty('--reading-font-weight', '400');
-    } else { // lora
-      root.style.setProperty('--reading-font-family', "'Lora', 'Literata', Georgia, serif");
-      root.style.setProperty('--reading-font-weight', '500');
-    }
-    localStorage.setItem('ammu_reader_font', font);
-  }
-
-  function applyReaderInk(ink) {
-    const root = document.documentElement;
-    if (ink === 'espresso') {
-      root.style.setProperty('--paper-ink', '#261620');
-      root.style.setProperty('--paper-ink-muted', '#4c3040');
-    } else { // obsidian
-      root.style.setProperty('--paper-ink', '#110811');
-      root.style.setProperty('--paper-ink-muted', '#3a2232');
-    }
-    localStorage.setItem('ammu_reader_ink', ink);
-  }
-
-  function restoreReaderPreferences() {
-    const savedSize = localStorage.getItem('ammu_reader_size') || 'standard';
-    const savedFont = localStorage.getItem('ammu_reader_font') || 'lora';
-    const savedInk = localStorage.getItem('ammu_reader_ink') || 'obsidian';
-
-    applyReaderSize(savedSize);
-    applyReaderFont(savedFont);
-    applyReaderInk(savedInk);
-
-    if (DOM.readerSizeGroup) {
-      DOM.readerSizeGroup.querySelectorAll('.size-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.size === savedSize);
-      });
-    }
-    if (DOM.readerFontGroup) {
-      DOM.readerFontGroup.querySelectorAll('.font-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.font === savedFont);
-      });
-    }
-    if (DOM.readerInkGroup) {
-      DOM.readerInkGroup.querySelectorAll('.ink-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.ink === savedInk);
-      });
-    }
   }
 
   // --- BOOTSTRAP APPLICATION ---
@@ -1491,9 +1390,6 @@
     attachEventListeners();
     setupTouchSwipes();
     setupKeyboardNav();
-
-    // Restore saved reader typography preferences
-    restoreReaderPreferences();
 
     // Start preloader
     startPreloaderSequence();
