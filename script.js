@@ -925,8 +925,8 @@
     audio.playPaperRustle();
 
     const isMobile = window.innerWidth <= 960;
-    const duration = isMobile ? 350 : 850;
-    const swapTime = isMobile ? 160 : 420;
+    const duration = isMobile ? 650 : 850;
+    const swapTime = isMobile ? 320 : 420;
 
     const rightPage = DOM.pageRightDisplay;
     rightPage.classList.add('flipping-next');
@@ -956,8 +956,8 @@
     audio.playPaperRustle();
 
     const isMobile = window.innerWidth <= 960;
-    const duration = isMobile ? 350 : 850;
-    const swapTime = isMobile ? 160 : 420;
+    const duration = isMobile ? 650 : 850;
+    const swapTime = isMobile ? 320 : 420;
 
     const rightPage = DOM.pageRightDisplay;
     rightPage.classList.add('flipping-prev');
@@ -1219,47 +1219,15 @@
         const absX = Math.abs(deltaX);
         const absY = Math.abs(deltaY);
 
-        // 1. Natural horizontal thumb swipe (up to 1200ms, threshold 28px, 1.05 ratio)
-        if (elapsedTime < 1200 && absX > 28 && absX > absY * 1.05) {
+        // Intentional horizontal thumb swipe across page:
+        // Requires deliberate horizontal travel (at least 65px),
+        // strictly horizontal (absX >= absY * 1.6 to prevent reading scroll interference),
+        // and completed in under 750ms.
+        if (elapsedTime <= 750 && absX >= 65 && absX >= absY * 1.6) {
           if (deltaX < 0) {
-            turnNextPage(); // Swiped left -> Next page
+            turnNextPage(); // Swiped left -> Next page with 3D curl
           } else {
-            turnPrevPage(); // Swiped right -> Prev page
-          }
-          return;
-        }
-
-        // 2. Vertical flick at boundary to advance / go back
-        const scrollElem = DOM.pageRightContent || DOM.pageRightText;
-        if (scrollElem && elapsedTime < 1000 && absY > 55 && absY > absX * 1.2) {
-          const atBottom = (scrollElem.scrollHeight - scrollElem.scrollTop - scrollElem.clientHeight) <= 18;
-          const atTop = scrollElem.scrollTop <= 10;
-
-          if (deltaY < 0 && atBottom) {
-            turnNextPage(); // Flick up at bottom -> Next Page
-            return;
-          } else if (deltaY > 0 && atTop && state.currentPage > 1) {
-            turnPrevPage(); // Flick down at top -> Prev Page
-            return;
-          }
-        }
-
-        // 3. Tap Navigation (One-touch page turn on margins, Kindle-style)
-        if (!isDragging && elapsedTime < 400 && absX < 12 && absY < 12) {
-          // If tapped directly on an interactive button or photo card, let native click event handle it
-          if (touchTarget && touchTarget.closest && touchTarget.closest('button, a, .lily-polaroid-card, .btn-view-all-photos, .toc-item-btn, #btn-trigger-flute-modal, .lily-container, .detail-tag, .mood-heart-toggle')) {
-            return;
-          }
-
-          const screenWidth = window.innerWidth;
-          const screenHeight = window.innerHeight;
-          // Middle zone vertically (excluding top bar and bottom controls)
-          if (endY > 70 && endY < screenHeight - 65) {
-            if (endX > screenWidth * 0.82) {
-              turnNextPage(); // Tap right margin -> Next Page
-            } else if (endX < screenWidth * 0.18) {
-              turnPrevPage(); // Tap left margin -> Prev Page
-            }
+            turnPrevPage(); // Swiped right -> Prev page with 3D curl
           }
         }
       }
