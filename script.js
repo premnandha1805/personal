@@ -19,7 +19,10 @@
     particleMode: 'stars', // 'stars', 'petals', 'notes', 'embers', 'rain', 'minimal', 'orbit'
     fluteStageActive: false,
     lilyGalleryActive: false,
-    currentLilyPhotoIndex: 0
+    currentLilyPhotoIndex: 0,
+    birthdayBgmStarted: false,
+    birthdayBgmStopped: false,
+    introTimelineStarted: false
   };
 
   // --- DOM CACHE ---
@@ -29,6 +32,7 @@
     preloadLine1: document.getElementById('preload-line-1'),
     preloadLine2: document.getElementById('preload-line-2'),
     loaderProgress: document.getElementById('loader-progress-fill'),
+    autoplayTapHint: document.getElementById('autoplay-tap-hint'),
 
     // Intro
     intro: document.getElementById('cinematic-intro'),
@@ -107,6 +111,7 @@
     musicVolumeSlider: document.getElementById('music-volume'),
     btnSfxToggle: document.getElementById('btn-sfx-toggle'),
     bgAudioPlayer: document.getElementById('bg-audio-player'),
+    birthdayBgmPlayer: document.getElementById('birthday-bgm-player'),
 
     // Canvas
     canvas: document.getElementById('ambient-canvas')
@@ -141,6 +146,9 @@
       }
       if (DOM.bgAudioPlayer) {
         DOM.bgAudioPlayer.volume = vol;
+      }
+      if (DOM.birthdayBgmPlayer) {
+        DOM.birthdayBgmPlayer.volume = vol;
       }
     }
 
@@ -491,85 +499,173 @@
     renderCurrentPage();
   }
 
-  // --- PRELOADER SEQUENCE ---
-  function startPreloaderSequence() {
-    let progress = 0;
-    const progressInterval = setInterval(() => {
-      progress += 4;
-      DOM.loaderProgress.style.width = `${progress}%`;
-      if (progress >= 100) {
-        clearInterval(progressInterval);
-      }
-    }, 40);
+  // --- 35-SECOND REMO HAPPY BIRTHDAY BGM SYNCHRONIZED TIMELINE ---
+  let introTimeouts = [];
+  let introSyncRaf = null;
 
-    // Line 1 fade in
-    setTimeout(() => {
-      DOM.preloadLine1.classList.add('visible');
-    }, 600);
-
-    // Line 2 fade in
-    setTimeout(() => {
-      DOM.preloadLine2.classList.add('visible');
-    }, 1700);
-
-    // Complete preloader and start cinematic intro
-    setTimeout(() => {
-      DOM.preloader.classList.add('fade-out');
-      setTimeout(() => {
-        DOM.preloader.style.display = 'none';
-        startCinematicIntro();
-      }, 1200);
-    }, 3600);
+  function clearIntroTimers() {
+    introTimeouts.forEach(t => clearTimeout(t));
+    introTimeouts = [];
+    if (introSyncRaf) {
+      cancelAnimationFrame(introSyncRaf);
+      introSyncRaf = null;
+    }
   }
 
-  // --- CINEMATIC OPENING INTRO SEQUENCE ---
-  function startCinematicIntro() {
-    DOM.intro.classList.add('active');
+  function stopBirthdayBgm() {
+    state.birthdayBgmStopped = true;
+    clearIntroTimers();
+    if (DOM.birthdayBgmPlayer) {
+      try {
+        DOM.birthdayBgmPlayer.pause();
+        DOM.birthdayBgmPlayer.currentTime = 0;
+      } catch (err) {
+        console.warn('Error stopping birthday BGM:', err);
+      }
+    }
+  }
 
-    // Subtle expanding center glow
-    setTimeout(() => {
-      DOM.introGlow.classList.add('expand');
-    }, 400);
+  function runSynchronizedOpeningTimeline() {
+    if (state.introTimelineStarted || state.birthdayBgmStopped) return;
+    state.introTimelineStarted = true;
 
-    // Step 1: “For someone very, very special…”
-    setTimeout(() => {
-      DOM.introStep1.classList.add('show');
-    }, 1200);
+    // 26-second timeline cues synchronized with Remo Birthday BGM
+    const TIMELINE_CUES = [
+      { time: 0.6, fired: false, action: () => DOM.preloadLine1 && DOM.preloadLine1.classList.add('visible') },
+      { time: 1.6, fired: false, action: () => DOM.preloadLine2 && DOM.preloadLine2.classList.add('visible') },
+      { time: 2.8, fired: false, action: () => DOM.preloader && DOM.preloader.classList.add('fade-out') },
+      { time: 3.6, fired: false, action: () => {
+          if (DOM.preloader) DOM.preloader.style.display = 'none';
+          if (DOM.intro) DOM.intro.classList.add('active');
+        }
+      },
+      { time: 4.0, fired: false, action: () => DOM.introGlow && DOM.introGlow.classList.add('expand') },
+      { time: 5.2, fired: false, action: () => DOM.introStep1 && DOM.introStep1.classList.add('show') },
+      { time: 9.2, fired: false, action: () => DOM.introStep2 && DOM.introStep2.classList.add('show') },
+      { time: 13.8, fired: false, action: () => DOM.introStep3 && DOM.introStep3.classList.add('show') },
+      { time: 18.5, fired: false, action: () => {
+          if (!DOM.introStep4) return;
+          DOM.introStep4.classList.add('show');
+          if (DOM.birthdayLetters) {
+            const spans = DOM.birthdayLetters.querySelectorAll('span');
+            spans.forEach((span, i) => {
+              const t = setTimeout(() => {
+                if (state.birthdayBgmStopped) return;
+                span.style.opacity = '1';
+                span.style.transform = 'translateY(0) scale(1)';
+              }, i * 55);
+              introTimeouts.push(t);
+            });
+          }
+        }
+      },
+      { time: 23.8, fired: false, action: () => DOM.introStep5 && DOM.introStep5.classList.add('show') },
+      { time: 25.5, fired: false, action: () => DOM.btnOpenBook && DOM.btnOpenBook.classList.add('ready-pulse') }
+    ];
 
-    // Step 2: “Someone who probably doesn't know…”
-    setTimeout(() => {
-      DOM.introStep2.classList.add('show');
-    }, 3200);
+    const audioEl = DOM.birthdayBgmPlayer;
+    let fallbackStartTime = null;
 
-    // Step 3: “AMMUUUUU 💗” & “Rakshashiiiiiiii”
-    setTimeout(() => {
-      DOM.introStep3.classList.add('show');
-    }, 5400);
+    function checkTimeline() {
+      if (state.birthdayBgmStopped) return;
 
-    // Step 4: “HAPPPY BIRTHDAY AMMUUUUU” letter animation
-    setTimeout(() => {
-      DOM.introStep4.classList.add('show');
-      const spans = DOM.birthdayLetters.querySelectorAll('span');
-      spans.forEach((span, i) => {
-        setTimeout(() => {
-          span.style.opacity = '1';
-          span.style.transform = 'translateY(0) scale(1)';
-        }, i * 75);
+      let cur = 0;
+      if (audioEl && !audioEl.paused && audioEl.currentTime > 0) {
+        cur = audioEl.currentTime;
+      } else {
+        if (!fallbackStartTime) fallbackStartTime = performance.now();
+        cur = (performance.now() - fallbackStartTime) / 1000;
+      }
+
+      // Smooth preloader progress bar during 0 - 2.8s
+      if (cur <= 2.8 && DOM.loaderProgress) {
+        const progressPct = Math.min(100, Math.max(0, (cur / 2.6) * 100));
+        DOM.loaderProgress.style.width = `${progressPct}%`;
+      }
+
+      // Execute cues
+      for (let i = 0; i < TIMELINE_CUES.length; i++) {
+        const cue = TIMELINE_CUES[i];
+        if (!cue.fired && cur >= cue.time) {
+          cue.fired = true;
+          try {
+            cue.action();
+          } catch (e) {
+            console.error('Cue execution error:', e);
+          }
+        }
+      }
+
+      if ((audioEl && !audioEl.ended && !state.birthdayBgmStopped) || (cur < 36.0 && !state.birthdayBgmStopped)) {
+        introSyncRaf = requestAnimationFrame(checkTimeline);
+      }
+    }
+
+    introSyncRaf = requestAnimationFrame(checkTimeline);
+  }
+
+  function startBirthdayBgm() {
+    if (state.birthdayBgmStarted || state.birthdayBgmStopped) return;
+    state.birthdayBgmStarted = true;
+
+    const player = DOM.birthdayBgmPlayer;
+    if (!player) {
+      console.warn('Birthday BGM player element not found, running visual timeline directly');
+      runSynchronizedOpeningTimeline();
+      return;
+    }
+
+    player.loop = false;
+    player.volume = state.volume;
+
+    const playPromise = player.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        // Autoplay succeeded!
+        if (DOM.autoplayTapHint) {
+          DOM.autoplayTapHint.style.display = 'none';
+        }
+        runSynchronizedOpeningTimeline();
+      }).catch((err) => {
+        // Autoplay restricted by browser policy
+        console.log('Autoplay restriction encountered, awaiting user gesture:', err);
+        state.birthdayBgmStarted = false;
+
+        if (DOM.autoplayTapHint) {
+          DOM.autoplayTapHint.style.display = 'block';
+        }
+
+        const handleUserGesture = () => {
+          window.removeEventListener('pointerdown', handleUserGesture);
+          window.removeEventListener('touchstart', handleUserGesture);
+          window.removeEventListener('click', handleUserGesture);
+          window.removeEventListener('keydown', handleUserGesture);
+
+          if (!state.birthdayBgmStarted && !state.birthdayBgmStopped) {
+            startBirthdayBgm();
+          }
+        };
+
+        window.addEventListener('pointerdown', handleUserGesture, { once: true, passive: true });
+        window.addEventListener('touchstart', handleUserGesture, { once: true, passive: true });
+        window.addEventListener('click', handleUserGesture, { once: true });
+        window.addEventListener('keydown', handleUserGesture, { once: true });
       });
-    }, 7200);
-
-    // Step 5: “I made something for you.” & “OPEN IT ♡”
-    setTimeout(() => {
-      DOM.introStep5.classList.add('show');
-    }, 9400);
+    } else {
+      runSynchronizedOpeningTimeline();
+    }
   }
 
   // --- TRANSITION FROM INTRO INTO THE BOOK ---
   function openBookFromIntro() {
+    // 1. IMMEDIATELY stop the 35-second birthday BGM
+    stopBirthdayBgm();
+
+    // 2. Play paper rustle sound
     audio.init();
     audio.playPaperRustle();
-    audio.toggleAmbientMusic(true);
 
+    // 3. Zoom out intro and open the book
     DOM.intro.classList.add('exit-zoom');
 
     setTimeout(() => {
@@ -1359,8 +1455,8 @@
     setupTouchSwipes();
     setupKeyboardNav();
 
-    // Start preloader
-    startPreloaderSequence();
+    // Start birthday BGM and synchronized opening experience
+    startBirthdayBgm();
   });
 
 })();

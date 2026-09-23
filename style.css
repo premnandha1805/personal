@@ -279,6 +279,19 @@ body {
   transition: width 0.3s ease;
 }
 
+.autoplay-tap-hint {
+  margin-top: 1.8rem;
+  font-family: var(--font-serif-heading);
+  font-size: 0.95rem;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  color: var(--gold-bright);
+  opacity: 0.85;
+  animation: organicPulse 2s ease-in-out infinite;
+  cursor: pointer;
+  user-select: none;
+}
+
 /* -------------------------------------------------------------
    2. CINEMATIC INTRO
    ------------------------------------------------------------- */
