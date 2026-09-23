@@ -22,7 +22,15 @@
     currentLilyPhotoIndex: 0,
     birthdayBgmStarted: false,
     birthdayBgmStopped: false,
-    introTimelineStarted: false
+    introTimelineStarted: false,
+    letterBgmPlaying: false,
+    letterBgmPausedByFlute: false,
+    letterBgmFadingOut: false,
+    userMusicMuted: false,
+    marriageBgmPlayed: false,
+    marriageBgmPlaying: false,
+    savedRosePosition: 0,
+    flutePausedAudio: null
   };
 
   // --- DOM CACHE ---
@@ -111,6 +119,7 @@
     musicVolumeSlider: document.getElementById('music-volume'),
     btnSfxToggle: document.getElementById('btn-sfx-toggle'),
     bgAudioPlayer: document.getElementById('bg-audio-player'),
+    marriageBgmPlayer: document.getElementById('marriage-bgm-player'),
     birthdayBgmPlayer: document.getElementById('birthday-bgm-player'),
 
     // Canvas
@@ -144,11 +153,15 @@
       if (this.masterGain && this.ctx) {
         this.masterGain.gain.setTargetAtTime(vol, this.ctx.currentTime, 0.05);
       }
-      if (DOM.bgAudioPlayer) {
-        DOM.bgAudioPlayer.volume = vol;
-      }
       if (DOM.birthdayBgmPlayer) {
         DOM.birthdayBgmPlayer.volume = vol;
+      }
+      if (DOM.bgAudioPlayer && state.letterBgmPlaying && !state.userMusicMuted && !state.letterBgmFadingOut && !state.marriageBgmPlaying) {
+        const targetVol = getEffectiveLetterVolume(state.currentPage);
+        DOM.bgAudioPlayer.volume = Math.max(0, Math.min(1, targetVol));
+      }
+      if (DOM.marriageBgmPlayer && state.marriageBgmPlaying && !state.userMusicMuted) {
+        DOM.marriageBgmPlayer.volume = getEffectiveTheriVolume();
       }
     }
 
@@ -197,41 +210,67 @@
       }
     }
 
-    // Soothing ambient chord drone (F# minor / A Major gentle celestial pad)
+    // Soothing ambient chord drone / background music control
     toggleAmbientMusic(play) {
       this.init();
       if (this.ctx && this.ctx.state === 'suspended') {
         this.ctx.resume();
       }
 
-      // First check if user provided background.mp3
-      if (DOM.bgAudioPlayer) {
+      // If Theri marriage intermission is currently active
+      if (DOM.marriageBgmPlayer && state.marriageBgmPlaying) {
         if (play) {
-          DOM.bgAudioPlayer.volume = state.volume;
-          const playPromise = DOM.bgAudioPlayer.play();
-          if (playPromise !== undefined) {
-            playPromise.then(() => {
-              state.musicPlaying = true;
-              DOM.musicStatusText.textContent = 'Playing';
-              DOM.btnMusicToggle.classList.add('active');
-            }).catch(() => {
-              // Fallback to procedural synth harmonic drone
-              this.startSynthPad();
-            });
-          }
+          state.userMusicMuted = false;
+          state.musicPlaying = true;
+          DOM.marriageBgmPlayer.play().then(() => {
+            smoothRampMarriageVolume(getEffectiveTheriVolume(), 1000);
+          }).catch(e => console.warn('Theri play error:', e));
+          DOM.musicStatusText.textContent = 'Playing';
+          DOM.btnMusicToggle.classList.add('active');
         } else {
-          DOM.bgAudioPlayer.pause();
-          this.stopSynthPad();
+          state.userMusicMuted = true;
           state.musicPlaying = false;
+          smoothRampMarriageVolume(0, 400);
+          setTimeout(() => {
+            if (state.userMusicMuted && DOM.marriageBgmPlayer) {
+              DOM.marriageBgmPlayer.pause();
+            }
+          }, 420);
           DOM.musicStatusText.textContent = 'Muted';
           DOM.btnMusicToggle.classList.remove('active');
         }
-      } else {
+        return;
+      }
+
+      if (DOM.bgAudioPlayer && state.letterBgmPlaying) {
         if (play) {
-          this.startSynthPad();
+          state.userMusicMuted = false;
+          state.musicPlaying = true;
+          DOM.bgAudioPlayer.play().then(() => {
+            smoothRampLetterVolume(getEffectiveLetterVolume(state.currentPage), 1000);
+          }).catch(e => console.warn('Play error:', e));
+          DOM.musicStatusText.textContent = 'Playing';
+          DOM.btnMusicToggle.classList.add('active');
         } else {
-          this.stopSynthPad();
+          state.userMusicMuted = true;
+          state.musicPlaying = false;
+          smoothRampLetterVolume(0, 400);
+          setTimeout(() => {
+            if (state.userMusicMuted && DOM.bgAudioPlayer) {
+              DOM.bgAudioPlayer.pause();
+            }
+          }, 420);
+          DOM.musicStatusText.textContent = 'Muted';
+          DOM.btnMusicToggle.classList.remove('active');
         }
+        return;
+      }
+
+      // Procedural fallback
+      if (play) {
+        this.startSynthPad();
+      } else {
+        this.stopSynthPad();
       }
     }
 
@@ -656,6 +695,312 @@
     }
   }
 
+  // --- LETTER-READING BGM ENGINE: "THE ROSE (INSTRUMENTAL)" ---
+  let letterVolumeRampTimer = null;
+  let letterLoopMonitorInterval = null;
+  let isCrossfadingLoop = false;
+
+  function getPhaseBaseVolume(pageNum) {
+    if (pageNum <= 1) return 0.10;   // Phase 1: 10%
+    if (pageNum <= 6) return 0.125;  // Phase 2: 12-13%
+    if (pageNum <= 8) return 0.135;  // Phase 3: 13-14%
+    if (pageNum <= 11) return 0.14;  // Phase 4: 14%
+    if (pageNum <= 16) return 0.15;  // Phase 5: 15% (Emotional peak)
+    if (pageNum <= 18) return 0.12;  // Phase 6: 12% (Brought gently down)
+    return 0.10;                     // Phase 7: 10% (Final message / breathing room)
+  }
+
+  function getEffectiveLetterVolume(pageNum) {
+    if (state.userMusicMuted) return 0;
+    const userMultiplier = state.volume * 2;
+    return Math.max(0, Math.min(1, getPhaseBaseVolume(pageNum) * userMultiplier));
+  }
+
+  function smoothRampLetterVolume(targetVol, durationMs = 1500) {
+    const player = DOM.bgAudioPlayer;
+    if (!player) return;
+    if (letterVolumeRampTimer) {
+      clearInterval(letterVolumeRampTimer);
+      letterVolumeRampTimer = null;
+    }
+
+    const startVol = player.volume;
+    const startTime = performance.now();
+    const stepInterval = 25;
+
+    letterVolumeRampTimer = setInterval(() => {
+      const elapsed = performance.now() - startTime;
+      const progress = Math.min(1, elapsed / durationMs);
+      const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+      const currentVol = startVol + (targetVol - startVol) * ease;
+      player.volume = Math.max(0, Math.min(1, currentVol));
+
+      if (progress >= 1) {
+        clearInterval(letterVolumeRampTimer);
+        letterVolumeRampTimer = null;
+        player.volume = Math.max(0, Math.min(1, targetVol));
+      }
+    }, stepInterval);
+  }
+
+  function startLetterBgm() {
+    const player = DOM.bgAudioPlayer;
+    if (!player) return;
+    if (state.letterBgmPlaying) return; // Exactly ONE instance, no duplicates
+
+    state.letterBgmFadingOut = false;
+    state.letterBgmPausedByFlute = false;
+
+    const initialTarget = getEffectiveLetterVolume(state.currentPage);
+    player.volume = 0.01;
+    player.currentTime = 0;
+
+    const playPromise = player.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        state.letterBgmPlaying = true;
+        state.musicPlaying = !state.userMusicMuted;
+        DOM.musicStatusText.textContent = state.userMusicMuted ? 'Muted' : 'Playing';
+        DOM.btnMusicToggle.classList.toggle('active', !state.userMusicMuted);
+
+        // Smoothly ramp to Page 1 target volume (0.10) over 2 seconds
+        if (!state.userMusicMuted) {
+          smoothRampLetterVolume(initialTarget, 2000);
+        }
+        setupLetterLoopMonitor();
+      }).catch(err => {
+        console.warn('Letter BGM playback error:', err);
+      });
+    }
+  }
+
+  function updateLetterBgmPhase(pageNum) {
+    if (!state.letterBgmPlaying || state.letterBgmFadingOut || state.letterBgmPausedByFlute || state.marriageBgmPlaying || state.userMusicMuted) return;
+    const targetVol = getEffectiveLetterVolume(pageNum);
+    smoothRampLetterVolume(targetVol, 1500); // 1.5-second gradual interpolation across page changes
+  }
+
+  function pauseLetterBgmForFlute() {
+    const player = DOM.bgAudioPlayer;
+    if (!player || player.paused || !state.letterBgmPlaying) return;
+
+    state.letterBgmPausedByFlute = true;
+    smoothRampLetterVolume(0, 200);
+    setTimeout(() => {
+      if (state.letterBgmPausedByFlute && player) {
+        player.pause();
+      }
+    }, 220);
+  }
+
+  function resumeLetterBgmAfterFlute() {
+    const player = DOM.bgAudioPlayer;
+    if (!player || !state.letterBgmPausedByFlute || state.userMusicMuted) return;
+
+    state.letterBgmPausedByFlute = false;
+    const playPromise = player.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        const targetVol = getEffectiveLetterVolume(state.currentPage);
+        smoothRampLetterVolume(targetVol, 800);
+      }).catch(err => console.warn('Resume letter BGM error:', err));
+    }
+  }
+
+  function setupLetterLoopMonitor() {
+    if (letterLoopMonitorInterval) return;
+    const player = DOM.bgAudioPlayer;
+    if (!player) return;
+
+    letterLoopMonitorInterval = setInterval(() => {
+      if (!state.letterBgmPlaying || state.letterBgmFadingOut || state.fluteStageActive || isCrossfadingLoop || state.marriageBgmPlaying) return;
+
+      const duration = player.duration || 134.43;
+      const cur = player.currentTime;
+
+      // When nearing the end (~131.5s, 3 seconds before ending), perform smooth musical dip and swell
+      if (cur >= duration - 3.0) {
+        isCrossfadingLoop = true;
+        const targetVol = getEffectiveLetterVolume(state.currentPage);
+
+        // Gentle 2.4-second musical dip down to 0.01
+        smoothRampLetterVolume(0.01, 2400);
+
+        setTimeout(() => {
+          if (!state.letterBgmPlaying || state.letterBgmFadingOut) {
+            isCrossfadingLoop = false;
+            return;
+          }
+          player.currentTime = 0;
+          // Smooth 2.5-second musical swell back to target page volume
+          if (!state.userMusicMuted) {
+            smoothRampLetterVolume(targetVol, 2500);
+          }
+          setTimeout(() => {
+            isCrossfadingLoop = false;
+          }, 2600);
+        }, 2450);
+      }
+    }, 500);
+  }
+
+  function fadeoutLetterBgm(durationMs = 4000) {
+    state.letterBgmFadingOut = true;
+    const player = DOM.bgAudioPlayer;
+    if (!player || player.paused) return;
+
+    smoothRampLetterVolume(0, durationMs);
+
+    setTimeout(() => {
+      if (state.letterBgmFadingOut && player) {
+        player.pause();
+        state.letterBgmPlaying = false;
+        state.musicPlaying = false;
+        DOM.musicStatusText.textContent = 'Muted';
+        DOM.btnMusicToggle.classList.remove('active');
+      }
+    }, durationMs + 100);
+  }
+
+  // --- ONE-TIME THERI MARRIAGE PROPOSAL INTERMISSION ENGINE ---
+  const BASE_THERI_VOLUME = 0.15;
+  let marriageVolumeRampTimer = null;
+  let theriBreathingTimeout = null;
+
+  function getEffectiveTheriVolume() {
+    if (state.userMusicMuted) return 0;
+    const userMultiplier = state.volume * 2;
+    return Math.max(0, Math.min(1, BASE_THERI_VOLUME * userMultiplier));
+  }
+
+  function smoothRampMarriageVolume(targetVol, durationMs = 1500) {
+    const player = DOM.marriageBgmPlayer;
+    if (!player) return;
+    if (marriageVolumeRampTimer) {
+      clearInterval(marriageVolumeRampTimer);
+      marriageVolumeRampTimer = null;
+    }
+
+    const startVol = player.volume;
+    const startTime = performance.now();
+    const stepInterval = 25;
+
+    marriageVolumeRampTimer = setInterval(() => {
+      const elapsed = performance.now() - startTime;
+      const progress = Math.min(1, elapsed / durationMs);
+      const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+      const currentVol = startVol + (targetVol - startVol) * ease;
+      player.volume = Math.max(0, Math.min(1, currentVol));
+
+      if (progress >= 1) {
+        clearInterval(marriageVolumeRampTimer);
+        marriageVolumeRampTimer = null;
+        player.volume = Math.max(0, Math.min(1, targetVol));
+      }
+    }, stepInterval);
+  }
+
+  function triggerMarriageIntermission() {
+    // Step 1: Immediately lock trigger before async operations to prevent double-firing
+    state.marriageBgmPlayed = true;
+    state.marriageBgmPlaying = true;
+
+    const rosePlayer = DOM.bgAudioPlayer;
+    const theriPlayer = DOM.marriageBgmPlayer;
+
+    if (!theriPlayer) {
+      console.warn('Marriage BGM player element not found');
+      state.marriageBgmPlaying = false;
+      return;
+    }
+
+    // Step 2: Capture The Rose position
+    if (rosePlayer) {
+      state.savedRosePosition = rosePlayer.currentTime;
+    }
+
+    // Step 3: Fade The Rose out smoothly over approximately 2 seconds
+    if (rosePlayer && !rosePlayer.paused) {
+      smoothRampLetterVolume(0, 2000);
+      setTimeout(() => {
+        if (state.marriageBgmPlaying && rosePlayer) {
+          rosePlayer.pause();
+          rosePlayer.currentTime = state.savedRosePosition;
+        }
+        startTheriPlayback();
+      }, 2100);
+    } else {
+      if (rosePlayer) {
+        rosePlayer.currentTime = state.savedRosePosition;
+      }
+      startTheriPlayback();
+    }
+  }
+
+  function startTheriPlayback() {
+    const theriPlayer = DOM.marriageBgmPlayer;
+    if (!theriPlayer) return;
+
+    theriPlayer.currentTime = 0;
+    const effectiveVol = getEffectiveTheriVolume();
+    theriPlayer.volume = effectiveVol;
+
+    const playPromise = theriPlayer.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        state.musicPlaying = !state.userMusicMuted;
+        if (!state.userMusicMuted) {
+          DOM.musicStatusText.textContent = 'Playing';
+          DOM.btnMusicToggle.classList.add('active');
+        }
+      }).catch(err => {
+        console.warn('Theri Marriage BGM playback error:', err);
+      });
+    }
+  }
+
+  function handleTheriEnded() {
+    // Step 1: Mark Theri as completed
+    state.marriageBgmPlaying = false;
+
+    // Step 2: Approximately 1 second of silence / breathing space
+    if (theriBreathingTimeout) clearTimeout(theriBreathingTimeout);
+    theriBreathingTimeout = setTimeout(() => {
+      const rosePlayer = DOM.bgAudioPlayer;
+      if (!rosePlayer) return;
+
+      // In case letter was already completed, closing book, or flute is active
+      if (state.letterBgmFadingOut || state.fluteStageActive) return;
+
+      // Step 3: Restore The Rose to the EXACT saved timestamp
+      rosePlayer.currentTime = state.savedRosePosition;
+
+      if (state.userMusicMuted) {
+        rosePlayer.pause();
+        state.letterBgmPlaying = true;
+        return;
+      }
+
+      // Step 4: Resume The Rose
+      rosePlayer.volume = 0.01;
+      const playPromise = rosePlayer.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          state.letterBgmPlaying = true;
+          state.musicPlaying = true;
+          DOM.musicStatusText.textContent = 'Playing';
+          DOM.btnMusicToggle.classList.add('active');
+
+          // Step 5: Smoothly ramp The Rose to current page's target volume over approximately 2 seconds
+          const targetVol = getEffectiveLetterVolume(state.currentPage);
+          smoothRampLetterVolume(targetVol, 2000);
+        }).catch(err => {
+          console.warn('Resume The Rose error after Theri:', err);
+        });
+      }
+    }, 1000);
+  }
+
   // --- TRANSITION FROM INTRO INTO THE BOOK ---
   function openBookFromIntro() {
     // 1. IMMEDIATELY stop the 35-second birthday BGM
@@ -673,6 +1018,7 @@
       DOM.intro.style.display = 'none';
       DOM.bookStage.classList.add('active');
       renderCurrentPage();
+      startLetterBgm();
     }, 1100);
   }
 
@@ -685,6 +1031,14 @@
     // Update Top Counter & Chapter
     DOM.currentPageNum.textContent = String(state.currentPage).padStart(2, '0');
     DOM.currentChapterTitle.textContent = pageData.title;
+
+    // Trigger Theri Marriage Intermission when Page 10 is reached for the first time
+    if (state.currentPage === 10 && !state.marriageBgmPlayed) {
+      triggerMarriageIntermission();
+    } else {
+      // Update Letter BGM Volume according to current page phase
+      updateLetterBgmPhase(state.currentPage);
+    }
 
     // Update active state in TOC
     const tocBtns = DOM.tocListItems.querySelectorAll('.toc-item-btn');
@@ -1087,6 +1441,22 @@
     state.fluteStageActive = true;
     DOM.fluteModal.classList.add('active');
 
+    // Pause whichever background audio is actively playing with zero overlap
+    if (state.marriageBgmPlaying && DOM.marriageBgmPlayer && !DOM.marriageBgmPlayer.paused) {
+      state.flutePausedAudio = 'theri';
+      smoothRampMarriageVolume(0, 200);
+      setTimeout(() => {
+        if (state.fluteStageActive && DOM.marriageBgmPlayer) {
+          DOM.marriageBgmPlayer.pause();
+        }
+      }, 220);
+    } else if (state.letterBgmPlaying && DOM.bgAudioPlayer && !DOM.bgAudioPlayer.paused) {
+      state.flutePausedAudio = 'rose';
+      pauseLetterBgmForFlute();
+    } else {
+      state.flutePausedAudio = null;
+    }
+
     // Check if video file loads or shows fallback
     const video = DOM.fluteVideoPlayer;
     video.currentTime = 0;
@@ -1111,6 +1481,21 @@
     }
     DOM.fluteModal.classList.remove('active');
     audio.playPaperRustle();
+
+    // Resume the exact previously active background audio from its exact timestamp
+    if (state.flutePausedAudio === 'theri') {
+      if (DOM.marriageBgmPlayer && !state.userMusicMuted) {
+        DOM.marriageBgmPlayer.play().then(() => {
+          smoothRampMarriageVolume(getEffectiveTheriVolume(), 800);
+        }).catch(err => console.warn('Resume Theri after flute error:', err));
+      }
+      state.flutePausedAudio = null;
+    } else if (state.flutePausedAudio === 'rose') {
+      resumeLetterBgmAfterFlute();
+      state.flutePausedAudio = null;
+    } else {
+      state.flutePausedAudio = null;
+    }
   }
 
   // --- CINEMATIC LILY MEMORY GALLERY MODAL ---
@@ -1217,6 +1602,22 @@
     audio.playPaperRustle();
     DOM.bookStage.classList.remove('active');
 
+    // If Theri is still playing during rapid navigation to finale, stop it cleanly
+    if (state.marriageBgmPlaying && DOM.marriageBgmPlayer) {
+      smoothRampMarriageVolume(0, 1000);
+      setTimeout(() => {
+        if (DOM.marriageBgmPlayer) {
+          DOM.marriageBgmPlayer.pause();
+        }
+      }, 1050);
+      state.marriageBgmPlaying = false;
+    }
+
+    // 5-7 seconds emotional breathing room before 4-second fade out to silence
+    setTimeout(() => {
+      fadeoutLetterBgm(4000);
+    }, 6000);
+
     setTimeout(() => {
       DOM.bookStage.style.display = 'none';
       DOM.closingScene.classList.add('active');
@@ -1242,11 +1643,30 @@
     closeSecretModal();
     DOM.closingScene.classList.remove('active');
 
+    // Reset marriage intermission state cleanly
+    state.marriageBgmPlayed = false;
+    state.marriageBgmPlaying = false;
+    state.savedRosePosition = 0;
+    state.flutePausedAudio = null;
+    if (theriBreathingTimeout) {
+      clearTimeout(theriBreathingTimeout);
+      theriBreathingTimeout = null;
+    }
+    if (DOM.marriageBgmPlayer) {
+      DOM.marriageBgmPlayer.pause();
+      DOM.marriageBgmPlayer.currentTime = 0;
+    }
+
     setTimeout(() => {
       DOM.closingScene.style.display = 'none';
       DOM.bookStage.style.display = 'flex';
       DOM.bookStage.classList.add('active');
       goToPage(1);
+
+      // Replay The Rose BGM smoothly from start of letter
+      state.letterBgmPlaying = false;
+      state.letterBgmFadingOut = false;
+      startLetterBgm();
     }, 600);
   }
 
@@ -1440,6 +1860,10 @@
       DOM.btnSfxToggle.classList.toggle('active', state.sfxEnabled);
     });
 
+    // Theri Marriage Proposal BGM ended listener (registered ONCE)
+    if (DOM.marriageBgmPlayer) {
+      DOM.marriageBgmPlayer.addEventListener('ended', handleTheriEnded);
+    }
   }
 
   // --- BOOTSTRAP APPLICATION ---
@@ -1458,5 +1882,8 @@
     // Start birthday BGM and synchronized opening experience
     startBirthdayBgm();
   });
+
+  // Expose state for inspection and automated verification
+  window.__appState = state;
 
 })();
